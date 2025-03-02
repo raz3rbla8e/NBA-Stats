@@ -70,7 +70,7 @@ def search_players(headers, stats_data):
         player_query = prompt("Enter player's name (or part of it) to search (type 'quit' to exit): ", completer=player_completer).strip()
         
         if player_query.lower() == "quit":
-            return  # Return to main_menu()
+            return  
 
         player_stats = search_player_stats(player_query, stats_data)
         
