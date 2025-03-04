@@ -70,9 +70,9 @@ def search_players(headers, stats_data):
     player_completer = WordCompleter(player_names, ignore_case=True)
     
     while True:
-        player_query = prompt("Enter player's name (or part of it) to search (type 'quit' to exit): ", completer=player_completer).strip()
+        player_query = prompt("Enter player's name (or part of it) to search (type 'back' to go back): ", completer=player_completer).strip()
         
-        if player_query.lower() == "quit":
+        if player_query.lower() == "back":
             return  
 
         player_stats = search_player_stats(player_query, stats_data)
@@ -82,21 +82,29 @@ def search_players(headers, stats_data):
         else:
             console.print(f"[bold red]❌ No player found with '{player_query}'. Try again![/bold red]")
 
+def get_season():
+    season_completer = WordCompleter(Seasons.keys(), ignore_case=True)
+    while True:
+        season = prompt("Select a season to view stats (type 'quit' to exit): ", completer=season_completer).strip()
+        if(season.lower() == "quit"):
+            return
+        if season not in Seasons:
+            console.print("[bold red]Invalid season. Please select a valid season.[/bold red]")
+        else:
+            headers, stats_data = fetch_nba_stats(season=season)
+            if headers and stats_data:
+                search_players(headers, stats_data)
+            else:
+                console.print("[bold red]Could not fetch NBA data. Exiting...[/bold red]")
+                return
+            
+
 # Main Menu
 def main_menu():
     console.print("\n[bold cyan]NBA Stats Explorer[/bold cyan] 🏀", style="bold underline")
-    season_completer = WordCompleter(Seasons.keys(), ignore_case=True)
     while True:
-        season = prompt("Select a season to view stats: ", completer=season_completer).strip()
-        if season not in Seasons:
-            console.print("[bold red]Invalid season. Please select a valid season.[/bold red]")
-            continue
-        headers, stats_data = fetch_nba_stats(season=season)
-        if headers and stats_data:
-            search_players(headers, stats_data)
-        else:
-            console.print("[bold red]Could not fetch NBA data. Exiting...[/bold red]")
-            break  # Exit the loop if data fetching fails
+        season = get_season()
+        
 
         console.print("[bold red]Exiting NBA Stats Explorer...[/bold red]")
         break
