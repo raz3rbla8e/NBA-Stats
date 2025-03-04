@@ -11,6 +11,9 @@ from prompt_toolkit.completion import WordCompleter
 
 console = Console()
 
+
+Seasons = {"2021-22": "2021-22", "2022-23": "2022-23", "2023-24": "2023-24", "2024-25": "2024-25"}
+
 # Function to fetch and process NBA stats
 def fetch_nba_stats(season="2024-25", stat_category="PTS"):
     url = f"https://stats.nba.com/stats/leagueLeaders?LeagueID=00&PerMode=PerGame&Scope=S&Season={season}&SeasonType=Regular%20Season&StatCategory={stat_category}"
@@ -82,9 +85,13 @@ def search_players(headers, stats_data):
 # Main Menu
 def main_menu():
     console.print("\n[bold cyan]NBA Stats Explorer[/bold cyan] 🏀", style="bold underline")
-    
+    season_completer = WordCompleter(Seasons.keys(), ignore_case=True)
     while True:
-        headers, stats_data = fetch_nba_stats()
+        season = prompt("Select a season to view stats: ", completer=season_completer).strip()
+        if season not in Seasons:
+            console.print("[bold red]Invalid season. Please select a valid season.[/bold red]")
+            continue
+        headers, stats_data = fetch_nba_stats(season=season)
         if headers and stats_data:
             search_players(headers, stats_data)
         else:
